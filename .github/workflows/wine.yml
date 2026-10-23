@@ -1,0 +1,62 @@
+name: Wine
+
+# Builds ExePort's Wine (wine/build.sh) and attaches the archive to a release, for the runtime manifest.
+# Run by hand: Actions → Wine → Run workflow. A revision that already has a release is refused, because the
+# manifest pins each archive by SHA-256 and a rebuild never gives the same bytes.
+
+on:
+  workflow_dispatch:
+    inputs:
+      revision:
+        description: Build number of this Wine version (exeport-wine-<wine>-<revision>)
+        required: true
+        default: "1"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v5
+      - name: Tools
+        run: |
+          softwareupdate --install-rosetta --agree-to-license || true
+          brew install bison pkgconf freetype gnutls sdl2 mingw-w64
+      - name: Downloads cache
+        uses: actions/cache@v4
+        with:
+          path: wine/.cache/dl
+          key: wine-dl-${{ hashFiles('wine/build.sh') }}
+          restore-keys: wine-dl-
+      - name: Build
+        env:
+          REVISION: ${{ inputs.revision }}
+        run: |
+          [[ "$REVISION" =~ ^[0-9]+$ ]] || { echo "revision must be a number" >&2; exit 1; }
+          # The tag carries the Wine version too; it is read from the script so the two can't disagree.
+          wine_version="$(sed -n 's/^WINE_VERSION="\(.*\)"$/\1/p' wine/build.sh)"
+          echo "TAG=wine-$wine_version-$REVISION" >> "$GITHUB_ENV"
+          export BASE_URL="https://github.com/$GITHUB_REPOSITORY/releases/download/wine-$wine_version-$REVISION"
+          wine/build.sh || { tail -n 60 wine/.cache/work/build/make.out 2>/dev/null; exit 1; }
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd wine/dist
+          archive="$(ls exeport-wine-*.tar.xz)"
+          sha="$(shasum -a 256 "$archive" | cut -d' ' -f1)"; size="$(stat -f%z "$archive")"
+          gh release create "$TAG" "$archive" exeport-wine-*.component.json --target "$GITHUB_SHA" \
+            --title "Wine for ExePort: $TAG" --notes "Built by wine/build.sh at $GITHUB_SHA.
+
+          sha256: \`$sha\`
+          size: $size bytes"
+          echo "archive: $archive"; echo "sha256:  $sha"; echo "size:    $size"
+          {
+            echo "### $archive"
+            echo "- sha256: \`$sha\`"
+            echo "- size: $size bytes"
+            echo '```json'; cat exeport-wine-*.component.json; echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
