@@ -16,8 +16,9 @@ One patch is applied, `wine/patches/0001`: it exports winemac's `macdrv_function
 fails with "Failed to create metal view".
 
 Every download is pinned by SHA-256. Wine, Mono and Gecko come from WineHQ; the x86_64 libraries Wine loads
-(FreeType, GnuTLS, SDL2, MoltenVK, the Vulkan loader and their dependencies) come unmodified from
-[Gcenx's Wine 11.18 build](https://github.com/Gcenx/macOS_Wine_builds/releases/tag/11.18).
+(FreeType, GnuTLS, SDL2 and their dependencies) come unmodified from
+[Gcenx's Wine 11.18 build](https://github.com/Gcenx/macOS_Wine_builds/releases/tag/11.18), and MoltenVK 1.4.2 from
+[Khronos' release](https://github.com/KhronosGroup/MoltenVK/releases/tag/v1.4.2).
 
 Build locally (Xcode, Rosetta, and `brew install bison pkgconf freetype gnutls sdl2 mingw-w64`):
 

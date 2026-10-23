@@ -12,8 +12,9 @@
 # every two weeks; move to 12.0 when it ships.
 #
 # Trust: every download is pinned by SHA-256. Wine, Mono and Gecko come from WineHQ. The x86_64 runtime libraries
-# Wine loads (FreeType, GnuTLS, SDL2, MoltenVK, the Vulkan loader and their dependencies) are taken from Gcenx's
-# Wine 11.18 build, the same pin MaPC uses, since Homebrew on Apple Silicon only has arm64 ones.
+# Wine loads (FreeType, GnuTLS, SDL2 and their dependencies) are taken from Gcenx's
+# Wine 11.18 build, the same pin MaPC uses, since Homebrew on Apple Silicon only has arm64 ones. MoltenVK
+# (Vulkan on Metal, for DXVK) comes from Khronos' own release.
 #
 # Env:
 #   CACHE_DIR  downloads (default wine/.cache/dl)    WORK_DIR  build tree (default wine/.cache/work)
@@ -43,6 +44,10 @@ GECKO_X64_SHA="fd88fc7e537d058d7a8abf0c1ebc90c574892a466de86706a26d254710a82814"
 RUNTIME_NAME="wine-staging-11.18-osx64.tar.xz"
 RUNTIME_URL="https://github.com/Gcenx/macOS_Wine_builds/releases/download/11.18/$RUNTIME_NAME"
 RUNTIME_SHA="b63704b91af269bc026a87f12bd297c4a50caaf570c322e600b6621ef918f127"
+MVK_VERSION="1.4.2"
+MVK_NAME="MoltenVK-macos-v$MVK_VERSION.tar"
+MVK_URL="https://github.com/KhronosGroup/MoltenVK/releases/download/v$MVK_VERSION/MoltenVK-macos.tar"
+MVK_SHA="f95765a6229cb7b915990a2890ce12ebe36a730b021545d3d52ae69ce4c4024e"
 # ExePort's oldest macOS (minMacOS in the runtime manifest).
 MIN_MACOS="15.0"
 
@@ -61,14 +66,23 @@ fetch "$MONO_NAME" "$MONO_URL" "$MONO_SHA"
 fetch "wine-gecko-$GECKO_VERSION-x86.tar.xz" "$GECKO_URL/wine-gecko-$GECKO_VERSION-x86.tar.xz" "$GECKO_X86_SHA"
 fetch "wine-gecko-$GECKO_VERSION-x86_64.tar.xz" "$GECKO_URL/wine-gecko-$GECKO_VERSION-x86_64.tar.xz" "$GECKO_X64_SHA"
 fetch "$RUNTIME_NAME" "$RUNTIME_URL" "$RUNTIME_SHA"
+fetch "$MVK_NAME" "$MVK_URL" "$MVK_SHA"
 
 # --- 1. Runtime libraries (x86_64) from the pinned Gcenx build -----------------------------------------
 rm -rf "$WORK/runtime" && mkdir -p "$WORK/runtime"
 tar -xJf "$CACHE/$RUNTIME_NAME" -C "$WORK/runtime"
 RLIB="$(ls -d "$WORK"/runtime/*.app/Contents/Resources/wine/lib)"
-# Link-time copies carry `@rpath/libX.N.dylib` ids so configure records versioned sonames.
+# Khronos' MoltenVK replaces Gcenx's (1.4.0). With 1.4.0, 32-bit DXVK games can't create their device: WoW64's
+# winevulkan imports host memory into Vulkan buffers and MoltenVK refuses ("Only external memory handle type
+# ..._MTLBUFFER_BIT_EXT and ..._MTLHEAP_BIT_EXT are supported"). 1.4.1 (WhiskyWine's) and 1.4.2 accept it.
+tar -xf "$CACHE/$MVK_NAME" -C "$WORK/runtime" MoltenVK/LICENSE MoltenVK/MoltenVK/dynamic/dylib/macOS/libMoltenVK.dylib
+rm -f "$RLIB/libMoltenVK.dylib"
+lipo "$WORK/runtime/MoltenVK/MoltenVK/dynamic/dylib/macOS/libMoltenVK.dylib" -thin x86_64 -output "$RLIB/libMoltenVK.dylib"
+# Link-time copies carry `@rpath/libX.N.dylib` ids so configure records versioned sonames. No Vulkan loader:
+# with one, winevulkan loads it instead of MoltenVK, and the loader finds no driver (Gcenx ships no ICD file), so
+# DXVK failed with "Required Vulkan extension VK_KHR_surface not supported". configure then falls back to MoltenVK.
 DEPS="$WORK/deps"; rm -rf "$DEPS" && mkdir -p "$DEPS/lib" "$DEPS/include"
-for pair in libgnutls:libgnutls.30 libfreetype:libfreetype.6 libSDL2:libSDL2-2.0.0 libvulkan:libvulkan.1 libMoltenVK:libMoltenVK; do
+for pair in libgnutls:libgnutls.30 libfreetype:libfreetype.6 libSDL2:libSDL2-2.0.0 libMoltenVK:libMoltenVK; do
   cp "$RLIB/${pair#*:}.dylib" "$DEPS/lib/${pair%%:*}.dylib"; chmod u+w "$DEPS/lib/${pair%%:*}.dylib"
   install_name_tool -id "@rpath/${pair#*:}.dylib" "$DEPS/lib/${pair%%:*}.dylib" 2>/dev/null
 done
@@ -123,6 +137,8 @@ for bin in "$WORK"/stage/bin/wine "$WORK"/stage/bin/wineserver "$WORK"/stage/lib
     | grep -vE "$GUARDED_WEAK" || true)"
   [ -z "$unguarded" ] || { echo "$(basename "$bin") weak-imports $unguarded: check it is guarded, or pin it off in configure" >&2; exit 1; }
 done
+grep -q '^#define SONAME_LIBVULKAN "libMoltenVK.dylib"' "$WORK/build/include/config.h" \
+  || { echo "winevulkan isn't linked to MoltenVK; DXVK would find no Vulkan driver" >&2; exit 1; }
 nm -gU "$WORK/stage/lib/wine/x86_64-unix/winemac.so" | grep -q " _macdrv_functions$" \
   || { echo "winemac.so doesn't export macdrv_functions; DXMT can't create its Metal view" >&2; exit 1; }
 
@@ -139,7 +155,7 @@ cp -a "$RLIB"/*.dylib "$W/lib/"
 for so in ntdll win32u bcrypt winevulkan; do
   otool -l "$W/lib/wine/x86_64-unix/$so.so" | grep -q "path @loader_path/../../ " || { echo "no rpath in $so.so" >&2; exit 1; }
 done
-for lib in libfreetype.6.dylib libgnutls.30.dylib libSDL2-2.0.0.dylib libvulkan.1.dylib libMoltenVK.dylib; do
+for lib in libfreetype.6.dylib libgnutls.30.dylib libSDL2-2.0.0.dylib libMoltenVK.dylib; do
   [ -f "$W/lib/$lib" ] || { echo "runtime library missing: $lib" >&2; exit 1; }
 done
 # No library reference or rpath may point back into this build machine's folders. (Wine's loader keeps the
@@ -166,6 +182,7 @@ for f in "$SRC"/libs/*/{COPYING,LICENSE,COPYRIGHT}*; do
   [ -f "$f" ] && cp "$f" "$L/wine-libs/$(basename "$(dirname "$f")")-$(basename "$f").txt"
 done
 cp licenses/* "$L/runtime-libs/"
+cp "$WORK/runtime/MoltenVK/LICENSE" "$L/runtime-libs/MoltenVK-LICENSE.txt"
 cp build.sh "$L/build/"; cp -R patches "$L/build/"
 cat > "$L/NOTICE.txt" <<TXT
 Wine for ExePort, Wine $WINE_VERSION build $REVISION.
@@ -177,7 +194,9 @@ Wine Mono $MONO_VERSION (share/wine/mono; MIT, LGPL, GPL with exceptions, MS-PL 
   $MONO_URL; source: https://dl.winehq.org/wine/wine-mono/$MONO_VERSION/wine-mono-$MONO_VERSION-src.tar.xz
 Wine Gecko $GECKO_VERSION (share/wine/gecko; MPL-2.0): $GECKO_URL/
   source: $GECKO_URL/wine-gecko-$GECKO_VERSION-src.tar.xz
-Runtime libraries in lib/ (FreeType, GnuTLS and its dependencies, SDL2, MoltenVK, the Vulkan loader and others):
+MoltenVK $MVK_VERSION (lib/libMoltenVK.dylib; Apache-2.0): the x86_64 slice of Khronos' release,
+  $MVK_URL (sha256 $MVK_SHA).
+Other runtime libraries in lib/ (FreeType, GnuTLS and its dependencies, SDL2, the Vulkan loader and others):
   unmodified from Gcenx's Wine 11.18 build, $RUNTIME_URL (sha256 $RUNTIME_SHA), built with MacPorts.
   Their licenses: runtime-libs/.
 TXT
