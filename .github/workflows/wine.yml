@@ -1,6 +1,6 @@
 name: Wine
 
-# Builds ExePort's Wine (wine/build.sh) and attaches the archive to a release, for the runtime manifest.
+# Builds EscApp's Wine (wine/build.sh) and attaches the archive to a release, for the runtime manifest.
 # Run by hand: Actions → Wine → Run workflow. A revision that already has a release is refused, because the
 # manifest pins each archive by SHA-256 and a rebuild never gives the same bytes.
 
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       revision:
-        description: Build number of this Wine version (exeport-wine-<wine>-<revision>)
+        description: Build number of this Wine version (escapp-wine-<wine>-<revision>)
         required: true
         default: "1"
 
@@ -46,10 +46,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cd wine/dist
-          archive="$(ls exeport-wine-*.tar.xz)"
+          archive="$(ls escapp-wine-*.tar.xz)"
           sha="$(shasum -a 256 "$archive" | cut -d' ' -f1)"; size="$(stat -f%z "$archive")"
-          gh release create "$TAG" "$archive" exeport-wine-*.component.json --target "$GITHUB_SHA" \
-            --title "Wine for ExePort: $TAG" --notes "Built by wine/build.sh at $GITHUB_SHA.
+          gh release create "$TAG" "$archive" escapp-wine-*.component.json --target "$GITHUB_SHA" \
+            --title "Wine for EscApp: $TAG" --notes "Built by wine/build.sh at $GITHUB_SHA.
 
           sha256: \`$sha\`
           size: $size bytes"
@@ -58,5 +58,5 @@ jobs:
             echo "### $archive"
             echo "- sha256: \`$sha\`"
             echo "- size: $size bytes"
-            echo '```json'; cat exeport-wine-*.component.json; echo '```'
+            echo '```json'; cat escapp-wine-*.component.json; echo '```'
           } >> "$GITHUB_STEP_SUMMARY"

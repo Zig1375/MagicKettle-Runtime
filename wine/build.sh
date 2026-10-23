@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Builds ExePort's Wine: stock Wine 11.0 with the patches in patches/, for Apple Silicon through Rosetta
+# Builds EscApp's Wine: stock Wine 11.0 with the patches in patches/, for Apple Silicon through Rosetta
 # (x86_64 with the new WoW64, so 32-bit games run without 32-bit macOS code), plus Wine Mono and Wine Gecko.
-#   wine/build.sh                -> $OUT_DIR/exeport-wine-<wine>-<revision>.tar.xz
+#   wine/build.sh                -> $OUT_DIR/escapp-wine-<wine>-<revision>.tar.xz
 # The archive holds one folder, `wine/`, laid out as Wine installs itself (bin/ lib/ share/) plus licenses/;
 # the runtime manifest installs it with `"from": "wine", "into": "wine"`.
 #
@@ -48,7 +48,7 @@ MVK_VERSION="1.4.2"
 MVK_NAME="MoltenVK-macos-v$MVK_VERSION.tar"
 MVK_URL="https://github.com/KhronosGroup/MoltenVK/releases/download/v$MVK_VERSION/MoltenVK-macos.tar"
 MVK_SHA="f95765a6229cb7b915990a2890ce12ebe36a730b021545d3d52ae69ce4c4024e"
-# ExePort's oldest macOS (minMacOS in the runtime manifest).
+# EscApp's oldest macOS (minMacOS in the runtime manifest).
 MIN_MACOS="15.0"
 
 command -v x86_64-w64-mingw32-gcc >/dev/null || { echo "need mingw-w64 (brew install mingw-w64)" >&2; exit 1; }
@@ -126,7 +126,7 @@ rm -rf "$WORK/stage"
   && "${CLEAN_ENV[@]}" make install > install.out 2>&1 ) \
   || { echo "Wine build failed; see $WORK/build/make.out and install.out" >&2; exit 1; }
 
-# The SDK can be newer than the oldest macOS ExePort supports. Functions only a newer macOS has are weak imports,
+# The SDK can be newer than the oldest macOS EscApp supports. Functions only a newer macOS has are weak imports,
 # NULL on older systems: with the macOS 27 SDK configure finds pipe2, and Wine then crashes at start on macOS 26
 # (ntdll server_pipe -> pipe2 -> address 0; MaPC engine 2.0.1). Hence ac_cv_func_pipe2=no above, and this check:
 # weak imports in Wine's modules must be ones its source guards with an availability check.
@@ -185,7 +185,7 @@ cp licenses/* "$L/runtime-libs/"
 cp "$WORK/runtime/MoltenVK/LICENSE" "$L/runtime-libs/MoltenVK-LICENSE.txt"
 cp build.sh "$L/build/"; cp -R patches "$L/build/"
 cat > "$L/NOTICE.txt" <<TXT
-Wine for ExePort, Wine $WINE_VERSION build $REVISION.
+Wine for EscApp, Wine $WINE_VERSION build $REVISION.
 
 Wine $WINE_VERSION (LGPL-2.1-or-later): $WINE_URL (sha256 $WINE_SHA),
   with the patches in build/patches applied, built by build/build.sh. Wine's own licenses: Wine-*.txt;
@@ -205,18 +205,18 @@ cat > "$W/BUILD.json" <<JSON
 JSON
 
 # --- 4. Package ----------------------------------------------------------------------------------------
-ARCHIVE="$OUT/exeport-wine-$WINE_VERSION-$REVISION.tar.xz"
+ARCHIVE="$OUT/escapp-wine-$WINE_VERSION-$REVISION.tar.xz"
 rm -f "$ARCHIVE"
 XZ_OPT="-T0 -9" tar -cJf "$ARCHIVE" -C "$PKG" wine
 SHA="$(shasum -a 256 "$ARCHIVE" | cut -d' ' -f1)"; SIZE="$(stat -f%z "$ARCHIVE")"
 echo "archive: $ARCHIVE ($((SIZE / 1048576)) MB)"
 echo "sha256:  $SHA"
 echo "size:    $SIZE"
-cat > "$OUT/exeport-wine-$WINE_VERSION-$REVISION.component.json" <<JSON
+cat > "$OUT/escapp-wine-$WINE_VERSION-$REVISION.component.json" <<JSON
 {
   "kind": "wine",
-  "version": "$WINE_VERSION (ExePort build $REVISION)",
-  "url": "${BASE_URL:-file://$OUT}/exeport-wine-$WINE_VERSION-$REVISION.tar.xz",
+  "version": "$WINE_VERSION (EscApp build $REVISION)",
+  "url": "${BASE_URL:-file://$OUT}/escapp-wine-$WINE_VERSION-$REVISION.tar.xz",
   "sha256": "$SHA",
   "size": $SIZE,
   "license": "LGPL-2.1-or-later",
@@ -224,4 +224,4 @@ cat > "$OUT/exeport-wine-$WINE_VERSION-$REVISION.component.json" <<JSON
   "into": "wine"
 }
 JSON
-echo "manifest component: $OUT/exeport-wine-$WINE_VERSION-$REVISION.component.json"
+echo "manifest component: $OUT/escapp-wine-$WINE_VERSION-$REVISION.component.json"

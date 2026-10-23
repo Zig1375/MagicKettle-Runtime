@@ -1,14 +1,14 @@
-# ExePort-Runtime
+# EscApp-Runtime
 
-Builds the Wine that [ExePort](https://github.com/Zig1375) uses to run Windows games on Apple Silicon Macs, and
-publishes it on this repository's [Releases](../../releases). ExePort's runtime manifest pins each release archive by
+Builds the Wine that [EscApp](https://github.com/Zig1375) uses to run Windows games on Apple Silicon Macs, and
+publishes it on this repository's [Releases](../../releases). EscApp's runtime manifest pins each release archive by
 URL, SHA-256 and size, so the app only installs files built here.
 
 ## Wine
 
 `wine/build.sh` builds stock [Wine](https://www.winehq.org) 11.0 for x86_64 (run through Rosetta) with the new
 WoW64, so 32-bit games need no 32-bit macOS code, and adds Wine Mono 10.4.1 and Wine Gecko 2.47.4 (the versions
-Wine 11.0 asks for). The archive `exeport-wine-<wine>-<revision>.tar.xz` holds one folder, `wine/`, laid out as Wine
+Wine 11.0 asks for). The archive `escapp-wine-<wine>-<revision>.tar.xz` holds one folder, `wine/`, laid out as Wine
 installs itself (`bin/`, `lib/`, `share/`), with every license and this build script in `wine/licenses/`.
 
 One patch is applied, `wine/patches/0001`: it exports winemac's `macdrv_functions` table, which
