@@ -11,9 +11,12 @@ WoW64, so 32-bit games need no 32-bit macOS code, and adds Wine Mono 10.4.1 and 
 Wine 11.0 asks for). The archive `escapp-wine-<wine>-<revision>.tar.xz` holds one folder, `wine/`, laid out as Wine
 installs itself (`bin/`, `lib/`, `share/`), with every license and this build script in `wine/licenses/`.
 
-One patch is applied, `wine/patches/0001`: it exports winemac's `macdrv_functions` table, which
-[DXMT](https://github.com/3Shain/dxmt) (Direct3D 10/11 on Metal) uses to create its Metal view. Without it DXMT
-fails with "Failed to create metal view".
+Two patches are applied (`wine/patches/`):
+
+- `0001` exports winemac's `macdrv_functions` table, which [DXMT](https://github.com/3Shain/dxmt)
+  (Direct3D 10/11 on Metal) uses to create its Metal view. Without it DXMT fails with "Failed to create metal view".
+- `0002`, from CodeWeavers' Wine (CrossOver 26.3.0), makes wow64cpu enter 64-bit code with `lcall`/`lretq` under
+  Rosetta 2. With stock Wine, 32-bit games crash at random in wow64cpu.dll (about one start in four).
 
 Every download is pinned by SHA-256. Wine, Mono and Gecko come from WineHQ; the x86_64 libraries Wine loads
 (FreeType, GnuTLS, SDL2 and their dependencies) come unmodified from
