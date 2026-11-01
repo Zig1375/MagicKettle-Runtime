@@ -1,6 +1,6 @@
 # MagicKettle-Runtime
 
-Builds the Wine that [Magic Kettle](https://github.com/Zig1375) uses to run Windows games on Apple Silicon Macs, and
+Builds the Wine that [Magic Kettle](https://github.com/Zig1375/MagicKettle) uses to run Windows games on Apple Silicon Macs, and
 publishes it on this repository's [Releases](../../releases). Magic Kettle's runtime manifest pins each release archive by
 URL, SHA-256 and size, so the app only installs files built here.
 
