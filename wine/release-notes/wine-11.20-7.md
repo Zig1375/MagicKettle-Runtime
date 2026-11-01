@@ -1,4 +1,4 @@
-Wine 11.20 for EscApp, seventh build: the Epic Games Launcher installs games and keeps the player signed in, and a
+Wine 11.20 for Plaviox, seventh build: the Epic Games Launcher installs games and keeps the player signed in, and a
 game window can be moved to another display again.
 
 ## What's new

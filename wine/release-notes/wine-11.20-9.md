@@ -1,4 +1,4 @@
-Wine 11.20 for EscApp, ninth build: the Epic Games Launcher installs games.
+Wine 11.20 for Plaviox, ninth build: the Epic Games Launcher installs games.
 
 ## What's new
 

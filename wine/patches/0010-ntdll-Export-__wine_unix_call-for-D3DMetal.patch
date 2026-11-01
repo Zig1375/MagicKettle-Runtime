@@ -7,7 +7,7 @@ unresolved, d3d12.dll fails to initialize and no Direct3D 12 game starts
 ("d3d12.dll failed to initialize, aborting"). Export a function by that name
 that forwards to the dispatcher.
 
-Written for EscApp against Wine 11.20. Like the code it changes, this patch is
+Written for Plaviox against Wine 11.20. Like the code it changes, this patch is
 licensed under the GNU LGPL 2.1 or later.
 
 diff --git a/dlls/ntdll/loader.c b/dlls/ntdll/loader.c

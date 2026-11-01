@@ -1,4 +1,4 @@
-Wine 11.20 for EscApp, eleventh build: games no longer hang on their first game controller check.
+Wine 11.20 for Plaviox, eleventh build: games no longer hang on their first game controller check.
 
 ## What's new
 

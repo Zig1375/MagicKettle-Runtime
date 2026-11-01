@@ -18,10 +18,10 @@ ttyname's buffer). The loader keeps the TLS copy current for every thread. Slot 
 so Wine's own code reads the PEB through the TEB instead, as it now does for the
 other thread data its dispatchers read through %gs. The %gs base for Windows code is
 kept per thread (pe_tsd_base), the TEB unless the setting is on, so nothing changes
-without it. EscApp sets it only for games running on D3DMetal, since Windows code
+without it. Plaviox sets it only for games running on D3DMetal, since Windows code
 then can't read other TEB fields through %gs.
 
-Written for EscApp against Wine 11.20. Like the code it changes, this patch is
+Written for Plaviox against Wine 11.20. Like the code it changes, this patch is
 licensed under the GNU LGPL 2.1 or later.
 
 diff --git a/dlls/ntdll/loader.c b/dlls/ntdll/loader.c
@@ -124,7 +124,7 @@ diff --git a/dlls/ntdll/unix/signal_x86_64.c b/dlls/ntdll/unix/signal_x86_64.c
 + * (Wine's default), macOS functions read their thread data from the TEB: pthread_setname_np found a NULL
 + * pthread_self() and every Direct3D 12 game crashed at start. WINEMACSHAREDTSD=1 keeps the macOS thread data as
 + * the base while Windows code runs as well, with the two TEB fields Windows code reads through %gs copied into
-+ * slots macOS leaves free. EscApp sets it only for D3DMetal, since Windows code then can't read other TEB
++ * slots macOS leaves free. Plaviox sets it only for D3DMetal, since Windows code then can't read other TEB
 + * fields through %gs. */
 +static BOOL shared_tsd_base;
 +#endif

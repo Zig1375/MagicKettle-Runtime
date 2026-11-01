@@ -1,4 +1,4 @@
-Wine 11.20 for EscApp, fifteenth build: 32-bit Direct3D 11 games no longer run out of memory. This is the only
+Wine 11.20 for Plaviox, fifteenth build: 32-bit Direct3D 11 games no longer run out of memory. This is the only
 build of Wine 11.20 still published, so below are also all the changes it carries compared to stock Wine 11.20.
 
 ## New in this build
@@ -16,9 +16,9 @@ build of Wine 11.20 still published, so below are also all the changes it carrie
 
 - **DXMT works.** Wine's Mac driver exports the table DXMT (Direct3D 10/11 on Metal) uses to create its Metal view;
   without it DXMT failed with "Failed to create metal view".
-- **DirectX 12 games run on Apple's D3DMetal** (build 10). EscApp doesn't ship D3DMetal: the player downloads Apple's
-  "Evaluation environment for Windows games" and adds it in EscApp's DirectX 12 settings. Wine exports the ntdll
-  function D3DMetal's DLLs import, and with `WINEMACSHAREDTSD=1`, which EscApp sets only for games on D3DMetal,
+- **DirectX 12 games run on Apple's D3DMetal** (build 10). Plaviox doesn't ship D3DMetal: the player downloads Apple's
+  "Evaluation environment for Windows games" and adds it in Plaviox's DirectX 12 settings. Wine exports the ntdll
+  function D3DMetal's DLLs import, and with `WINEMACSHAREDTSD=1`, which Plaviox sets only for games on D3DMetal,
   D3DMetal's macOS library can be called from Windows threads.
 - **Fixed-size game windows can be stretched** by dragging their corner (build 6, with `StretchWindows` next to
   `EmulateModeset`). The game keeps drawing at its own size, Wine scales the picture and the mouse, the window keeps

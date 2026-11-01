@@ -21,12 +21,12 @@ git merge-base --is-ancestor "$HEAD_SHA" "origin/$(git rev-parse --abbrev-ref HE
 ! gh release view "$TAG" -R "$REPO" >/dev/null 2>&1 || { echo "$TAG already exists." >&2; exit 1; }
 
 REVISION="$REVISION" BASE_URL="https://github.com/$REPO/releases/download/$TAG" ./build.sh
-ARCHIVE="dist/escapp-wine-$WINE_VERSION-$REVISION.tar.xz"
-COMPONENT="dist/escapp-wine-$WINE_VERSION-$REVISION.component.json"
+ARCHIVE="dist/plaviox-wine-$WINE_VERSION-$REVISION.tar.xz"
+COMPONENT="dist/plaviox-wine-$WINE_VERSION-$REVISION.component.json"
 read -r -p "Built $ARCHIVE. Publish it as $TAG? [y/N] " answer
 [ "$answer" = y ] || { echo "Not published."; exit 0; }
 
 ./release-notes.sh "$TAG" "$ARCHIVE" "$COMPONENT" "$HEAD_SHA" > "dist/$TAG-notes.md"
 gh release create "$TAG" "$ARCHIVE" "$COMPONENT" -R "$REPO" --target "$HEAD_SHA" \
-  --title "Wine for EscApp: $TAG" --notes-file "dist/$TAG-notes.md"
+  --title "Wine for Plaviox: $TAG" --notes-file "dist/$TAG-notes.md"
 echo "published $TAG; manifest entry: $COMPONENT"

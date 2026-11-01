@@ -11,7 +11,7 @@ emulated display mode instead, so that the window covers the new raw rect:
 the same virt -> raw mapping that EmulateModeset uses for full-screen games
 then stretches GDI, OpenGL, Vulkan and DXMT output and maps the mouse back.
 The program gets no WM_SIZE and no WM_DISPLAYCHANGE. The size the player chose
-is kept per window class under HKCU\Software\Wine\EscApp\Stretch; when the
+is kept per window class under HKCU\Software\Wine\Plaviox\Stretch; when the
 program sizes or shows the window itself, the scale is fitted to that size
 again, keeping the program's aspect ratio, never below one program pixel per
 screen pixel and never beyond the work area. A display mode the program set
@@ -97,7 +97,7 @@ index 7095e41..9d0b050 100644
 +    UINT physical_width, physical_height;   /* raw display size then */
 +};
 +
-+static const char stretch_keyA[] = "Software\\Wine\\EscApp\\Stretch";
++static const char stretch_keyA[] = "Software\\Wine\\Plaviox\\Stretch";
 +static const WCHAR stretch_modeW[] = {'M','o','d','e',0};
 +static const WCHAR stretch_targetW[] = {'T','a','r','g','e','t',0};
 +

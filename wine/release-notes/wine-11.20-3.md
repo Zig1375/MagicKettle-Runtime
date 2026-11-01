@@ -1,4 +1,4 @@
-Wine 11.20 for EscApp, third build: osync, our fast in-process synchronization, and our own fix for 32-bit games
+Wine 11.20 for Plaviox, third build: osync, our fast in-process synchronization, and our own fix for 32-bit games
 under Rosetta 2.
 
 ## What's new

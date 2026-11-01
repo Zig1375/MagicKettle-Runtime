@@ -221,7 +221,7 @@ static void bench_wait_all(void)
 
 static int child_main(void)
 {
-    HANDLE ping = OpenEventW(EVENT_ALL_ACCESS, FALSE, L"EscAppSyncPing"), pong = OpenEventW(EVENT_ALL_ACCESS, FALSE, L"EscAppSyncPong");
+    HANDLE ping = OpenEventW(EVENT_ALL_ACCESS, FALSE, L"PlavioxSyncPing"), pong = OpenEventW(EVENT_ALL_ACCESS, FALSE, L"PlavioxSyncPong");
     int i;
     if (!ping || !pong) return 1;
     for (i = 0; i < PROC_ROUNDS; i++)
@@ -234,7 +234,7 @@ static int child_main(void)
 
 static void bench_processes(void)
 {
-    HANDLE ping = CreateEventW(NULL, FALSE, FALSE, L"EscAppSyncPing"), pong = CreateEventW(NULL, FALSE, FALSE, L"EscAppSyncPong");
+    HANDLE ping = CreateEventW(NULL, FALSE, FALSE, L"PlavioxSyncPing"), pong = CreateEventW(NULL, FALSE, FALSE, L"PlavioxSyncPong");
     STARTUPINFOW si = {sizeof(si)};
     PROCESS_INFORMATION pi;
     WCHAR cmd[MAX_PATH + 16];
@@ -339,7 +339,7 @@ static void check_semantics(void)
 
     /* named objects are shared */
     {
-        HANDLE a = CreateEventW(NULL, TRUE, FALSE, L"EscAppSyncProbe"), b = OpenEventW(EVENT_ALL_ACCESS, FALSE, L"EscAppSyncProbe");
+        HANDLE a = CreateEventW(NULL, TRUE, FALSE, L"PlavioxSyncProbe"), b = OpenEventW(EVENT_ALL_ACCESS, FALSE, L"PlavioxSyncProbe");
         CHECK(a && b);
         SetEvent(a);
         CHECK(WaitForSingleObject(b, 0) == WAIT_OBJECT_0);
@@ -591,8 +591,8 @@ static int stress_suspend_main(void)
  * the child to die. */
 static int holder_child_main(void)
 {
-    HANDLE ev = OpenEventW(EVENT_ALL_ACCESS, FALSE, L"EscAppHolderEvent");
-    HANDLE m = OpenMutexW(MUTEX_ALL_ACCESS, FALSE, L"EscAppHolderMutex");
+    HANDLE ev = OpenEventW(EVENT_ALL_ACCESS, FALSE, L"PlavioxHolderEvent");
+    HANDLE m = OpenMutexW(MUTEX_ALL_ACCESS, FALSE, L"PlavioxHolderMutex");
     if (!ev || !m) return 1;
     for (;;)
     {
@@ -605,7 +605,7 @@ static int holder_child_main(void)
 
 static int holder_main(int rounds)
 {
-    HANDLE ev = CreateEventW(NULL, TRUE, FALSE, L"EscAppHolderEvent"), m = CreateMutexW(NULL, FALSE, L"EscAppHolderMutex");
+    HANDLE ev = CreateEventW(NULL, TRUE, FALSE, L"PlavioxHolderEvent"), m = CreateMutexW(NULL, FALSE, L"PlavioxHolderMutex");
     STARTUPINFOW si = {sizeof(si)};
     PROCESS_INFORMATION pi;
     WCHAR cmd[MAX_PATH + 16];

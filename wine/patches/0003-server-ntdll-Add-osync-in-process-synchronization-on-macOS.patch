@@ -32,7 +32,7 @@ waiting in osync check every second that wineserver is still there, and exit whe
 
 It is off unless wineserver starts with WINEOSYNC=1; processes use whatever
 the server provides. The design and its tests are described in the
-EscApp-Runtime repository (docs/osync.md, tests/osync, tests/sync,
+Plaviox-Runtime repository (docs/osync.md, tests/osync, tests/sync,
 tests/winetest).
 
 This patch is licensed under the GNU LGPL 2.1 or later, like the code it
@@ -583,7 +583,7 @@ index 0000000..fb79a17
 +/*
 + * osync: in-process synchronization objects on macOS
 + *
-+ * Copyright 2026 EscApp contributors
++ * Copyright 2026 Plaviox contributors
 + *
 + * This library is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU Lesser General Public
@@ -1734,7 +1734,7 @@ index 0000000..083d125
 +/*
 + * osync: in-process synchronization objects on macOS, server side
 + *
-+ * Copyright 2026 EscApp contributors
++ * Copyright 2026 Plaviox contributors
 + *
 + * This library is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU Lesser General Public
@@ -2232,7 +2232,7 @@ index 0000000..58c4ead
 +/*
 + * osync: in-process synchronization objects on macOS, server side
 + *
-+ * Copyright 2026 EscApp contributors
++ * Copyright 2026 Plaviox contributors
 + *
 + * This library is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU Lesser General Public

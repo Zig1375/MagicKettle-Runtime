@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static const WCHAR key_name[] = L"EscApp keyprobe";
+static const WCHAR key_name[] = L"Plaviox keyprobe";
 static const BYTE hash[32] = {0xe5, 0xca, 0x57, 0x04};
 static int failures;
 

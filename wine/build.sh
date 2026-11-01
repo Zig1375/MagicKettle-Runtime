@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Builds EscApp's Wine: Wine 11.20 with the patches in patches/, for Apple Silicon through Rosetta
+# Builds Plaviox's Wine: Wine 11.20 with the patches in patches/, for Apple Silicon through Rosetta
 # (x86_64 with the new WoW64, so 32-bit games run without 32-bit macOS code), plus Wine Mono and Wine Gecko.
-#   wine/build.sh                -> $OUT_DIR/escapp-wine-<wine>-<revision>.tar.xz
+#   wine/build.sh                -> $OUT_DIR/plaviox-wine-<wine>-<revision>.tar.xz
 # The archive holds one folder, `wine/`, laid out as Wine installs itself (bin/ lib/ share/) plus licenses/;
 # the runtime manifest installs it with `"from": "wine", "into": "wine"`.
 #
@@ -16,7 +16,7 @@
 # patches/0008 keeps the last frame in the back buffer of an emulated display, which Chromium-based games redraw
 # only in part. patches/0009 keeps the permissions given to files and folders, which the Epic Games Launcher reads
 # back before it installs a game. patches/0010 and 0011 let Apple's D3DMetal run Direct3D 12 games (the player's
-# own copy, added in EscApp): ntdll exports the __wine_unix_call its DLLs import, and with WINEMACSHAREDTSD=1 its
+# own copy, added in Plaviox): ntdll exports the __wine_unix_call its DLLs import, and with WINEMACSHAREDTSD=1 its
 # macOS library can be called straight from Windows threads.
 # Why Wine 11.20, a development release: it passes the same probes as 11.0 (DXVK, DXMT and WineD3D, 32- and
 # 64-bit) and carries ten months of fixes the stable 11.0 branch doesn't get. Development releases change every
@@ -77,7 +77,7 @@ GST_PLUGINS="coreelements app typefindfunctions playback audioconvert audioresam
   videorate videofilter deinterlace volume pbtypes isomp4 matroska avi asf ogg flv wavparse mpegpsdemux mpegtsdemux
   id3demux apetag realmedia audioparsers videoparsersbad rawparse libav vorbis theora opus opusparse vpx dav1d flac
   mpg123 adpcmdec alaw mulaw jpeg"
-# EscApp's oldest macOS (minMacOS in the runtime manifest).
+# Plaviox's oldest macOS (minMacOS in the runtime manifest).
 MIN_MACOS="15.0"
 
 command -v x86_64-w64-mingw32-gcc >/dev/null || { echo "need mingw-w64 (brew install mingw-w64)" >&2; exit 1; }
@@ -196,7 +196,7 @@ rm -rf "$WORK/stage"
   && "${CLEAN_ENV[@]}" make install > install.out 2>&1 ) \
   || { echo "Wine build failed; see $WORK/build/make.out and install.out" >&2; exit 1; }
 
-# The SDK can be newer than the oldest macOS EscApp supports. Functions only a newer macOS has are weak imports,
+# The SDK can be newer than the oldest macOS Plaviox supports. Functions only a newer macOS has are weak imports,
 # NULL on older systems: with the macOS 27 SDK configure finds pipe2, and Wine then crashes at start on macOS 26
 # (ntdll server_pipe -> pipe2 -> address 0; MaPC engine 2.0.1). Hence ac_cv_func_pipe2=no above, and this check:
 # weak imports in Wine's modules must be ones its source guards with an availability check.
@@ -288,7 +288,7 @@ cp "$WORK/runtime/MoltenVK/LICENSE" "$L/runtime-libs/MoltenVK-LICENSE.txt"
 mkdir -p "$L/gstreamer"; cp -R "$GST/dev/share/licenses/" "$L/gstreamer/"
 cp build.sh "$L/build/"; cp -R patches "$L/build/"
 cat > "$L/NOTICE.txt" <<TXT
-Wine for EscApp, Wine $WINE_VERSION build $REVISION.
+Wine for Plaviox, Wine $WINE_VERSION build $REVISION.
 
 Wine $WINE_VERSION (LGPL-2.1-or-later): $WINE_URL (sha256 $WINE_SHA),
   with the patches in build/patches applied, built by build/build.sh. Wine's own licenses: Wine-*.txt;
@@ -313,18 +313,18 @@ cat > "$W/BUILD.json" <<JSON
 JSON
 
 # --- 4. Package ----------------------------------------------------------------------------------------
-ARCHIVE="$OUT/escapp-wine-$WINE_VERSION-$REVISION.tar.xz"
+ARCHIVE="$OUT/plaviox-wine-$WINE_VERSION-$REVISION.tar.xz"
 rm -f "$ARCHIVE"
 XZ_OPT="-T0 -9" tar -cJf "$ARCHIVE" -C "$PKG" wine
 SHA="$(shasum -a 256 "$ARCHIVE" | cut -d' ' -f1)"; SIZE="$(stat -f%z "$ARCHIVE")"
 echo "archive: $ARCHIVE ($((SIZE / 1048576)) MB)"
 echo "sha256:  $SHA"
 echo "size:    $SIZE"
-cat > "$OUT/escapp-wine-$WINE_VERSION-$REVISION.component.json" <<JSON
+cat > "$OUT/plaviox-wine-$WINE_VERSION-$REVISION.component.json" <<JSON
 {
   "kind": "wine",
-  "version": "$WINE_VERSION (EscApp build $REVISION)",
-  "url": "${BASE_URL:-file://$OUT}/escapp-wine-$WINE_VERSION-$REVISION.tar.xz",
+  "version": "$WINE_VERSION (Plaviox build $REVISION)",
+  "url": "${BASE_URL:-file://$OUT}/plaviox-wine-$WINE_VERSION-$REVISION.tar.xz",
   "sha256": "$SHA",
   "size": $SIZE,
   "license": "LGPL-2.1-or-later",
@@ -332,4 +332,4 @@ cat > "$OUT/escapp-wine-$WINE_VERSION-$REVISION.component.json" <<JSON
   "into": "wine"
 }
 JSON
-echo "manifest component: $OUT/escapp-wine-$WINE_VERSION-$REVISION.component.json"
+echo "manifest component: $OUT/plaviox-wine-$WINE_VERSION-$REVISION.component.json"

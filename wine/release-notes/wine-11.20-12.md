@@ -1,4 +1,4 @@
-Wine 11.20 for EscApp, twelfth build: games and Steam no longer crash when the Mac is slow to start them, and a
+Wine 11.20 for Plaviox, twelfth build: games and Steam no longer crash when the Mac is slow to start them, and a
 crash on a macOS thread is logged with its stack.
 
 ## What's new

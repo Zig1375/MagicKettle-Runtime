@@ -1,14 +1,14 @@
-# EscApp-Runtime
+# Plaviox-Runtime
 
-Builds the Wine that [EscApp](https://github.com/Zig1375) uses to run Windows games on Apple Silicon Macs, and
-publishes it on this repository's [Releases](../../releases). EscApp's runtime manifest pins each release archive by
+Builds the Wine that [Plaviox](https://github.com/Zig1375) uses to run Windows games on Apple Silicon Macs, and
+publishes it on this repository's [Releases](../../releases). Plaviox's runtime manifest pins each release archive by
 URL, SHA-256 and size, so the app only installs files built here.
 
 ## Wine
 
 `wine/build.sh` builds [Wine](https://www.winehq.org) 11.20 (development release) for x86_64 (run through Rosetta) with the new
 WoW64, so 32-bit games need no 32-bit macOS code, and adds Wine Mono 11.3.0 and Wine Gecko 2.47.4 (the versions
-Wine 11.20 asks for). The archive `escapp-wine-<wine>-<revision>.tar.xz` holds one folder, `wine/`, laid out as Wine
+Wine 11.20 asks for). The archive `plaviox-wine-<wine>-<revision>.tar.xz` holds one folder, `wine/`, laid out as Wine
 installs itself (`bin/`, `lib/`, `share/`), with every license and this build script in `wine/licenses/`.
 
 These patches are applied (`wine/patches/`):
@@ -49,7 +49,7 @@ These patches are applied (`wine/patches/`):
 - `0011` lets D3DMetal's macOS library run from the threads its Windows DLLs start: with `WINEMACSHAREDTSD=1`
   Windows code keeps the macOS thread data as its `%gs` base while it calls into that library, which reads the
   thread data there; without it `pthread_setname_np` saw a NULL `pthread_self()` and every Direct3D 12 game
-  crashed at start. Nothing changes without the setting, which EscApp turns on only for D3DMetal.
+  crashed at start. Nothing changes without the setting, which Plaviox turns on only for D3DMetal.
 - `0012` makes the first XInput call return before the controller update thread touches any window. The thread
   registered its window class and message window first, and on macOS the class registration waited for the window
   lock whose holder waited for the calling thread: Among Us (Unity, Rewired) hung for good on a black window right
