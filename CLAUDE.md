@@ -1,6 +1,6 @@
-# Plaviox-Runtime
+# MagicKettle-Runtime
 
-Builds the Wine that Plaviox installs (`wine/build.sh`) and publishes it as GitHub releases through the Wine
+Builds the Wine that Magic Kettle installs (`wine/build.sh`) and publishes it as GitHub releases through the Wine
 workflow (`.github/workflows/wine.yml`). See `README.md` for what goes into the build.
 
 ## Release notes: every change goes into one
@@ -20,7 +20,7 @@ refuses a revision without one. Keep it current as you work:
 ## Working here
 
 - Commit, don't push: GitHub minutes are scarce. Push or run the workflow only when the user asks.
-- Check a build locally before it is released: the graphics probes (Plaviox's `Tests/Fixtures/probes`, DXVK and
+- Check a build locally before it is released: the graphics probes (Magic Kettle's `Tests/Fixtures/probes`, DXVK and
   DXMT for Direct3D 11, WineD3D for Direct3D 9, 32- and 64-bit), `tests/media/run.sh`, `tests/change/run.sh`, `tests/acl/run.sh`, and
   for anything touching synchronization `tests/osync/run.sh`, `tests/sync/run.sh` and `tests/winetest/run.sh`.
 - Clean up after every task: Wine prefixes, test homes, unpacked packages and build trees take gigabytes each and

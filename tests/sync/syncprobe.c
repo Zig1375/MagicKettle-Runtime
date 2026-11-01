@@ -221,7 +221,7 @@ static void bench_wait_all(void)
 
 static int child_main(void)
 {
-    HANDLE ping = OpenEventW(EVENT_ALL_ACCESS, FALSE, L"PlavioxSyncPing"), pong = OpenEventW(EVENT_ALL_ACCESS, FALSE, L"PlavioxSyncPong");
+    HANDLE ping = OpenEventW(EVENT_ALL_ACCESS, FALSE, L"MagicKettleSyncPing"), pong = OpenEventW(EVENT_ALL_ACCESS, FALSE, L"MagicKettleSyncPong");
     int i;
     if (!ping || !pong) return 1;
     for (i = 0; i < PROC_ROUNDS; i++)
@@ -234,7 +234,7 @@ static int child_main(void)
 
 static void bench_processes(void)
 {
-    HANDLE ping = CreateEventW(NULL, FALSE, FALSE, L"PlavioxSyncPing"), pong = CreateEventW(NULL, FALSE, FALSE, L"PlavioxSyncPong");
+    HANDLE ping = CreateEventW(NULL, FALSE, FALSE, L"MagicKettleSyncPing"), pong = CreateEventW(NULL, FALSE, FALSE, L"MagicKettleSyncPong");
     STARTUPINFOW si = {sizeof(si)};
     PROCESS_INFORMATION pi;
     WCHAR cmd[MAX_PATH + 16];
@@ -339,7 +339,7 @@ static void check_semantics(void)
 
     /* named objects are shared */
     {
-        HANDLE a = CreateEventW(NULL, TRUE, FALSE, L"PlavioxSyncProbe"), b = OpenEventW(EVENT_ALL_ACCESS, FALSE, L"PlavioxSyncProbe");
+        HANDLE a = CreateEventW(NULL, TRUE, FALSE, L"MagicKettleSyncProbe"), b = OpenEventW(EVENT_ALL_ACCESS, FALSE, L"MagicKettleSyncProbe");
         CHECK(a && b);
         SetEvent(a);
         CHECK(WaitForSingleObject(b, 0) == WAIT_OBJECT_0);
@@ -591,8 +591,8 @@ static int stress_suspend_main(void)
  * the child to die. */
 static int holder_child_main(void)
 {
-    HANDLE ev = OpenEventW(EVENT_ALL_ACCESS, FALSE, L"PlavioxHolderEvent");
-    HANDLE m = OpenMutexW(MUTEX_ALL_ACCESS, FALSE, L"PlavioxHolderMutex");
+    HANDLE ev = OpenEventW(EVENT_ALL_ACCESS, FALSE, L"MagicKettleHolderEvent");
+    HANDLE m = OpenMutexW(MUTEX_ALL_ACCESS, FALSE, L"MagicKettleHolderMutex");
     if (!ev || !m) return 1;
     for (;;)
     {
@@ -605,7 +605,7 @@ static int holder_child_main(void)
 
 static int holder_main(int rounds)
 {
-    HANDLE ev = CreateEventW(NULL, TRUE, FALSE, L"PlavioxHolderEvent"), m = CreateMutexW(NULL, FALSE, L"PlavioxHolderMutex");
+    HANDLE ev = CreateEventW(NULL, TRUE, FALSE, L"MagicKettleHolderEvent"), m = CreateMutexW(NULL, FALSE, L"MagicKettleHolderMutex");
     STARTUPINFOW si = {sizeof(si)};
     PROCESS_INFORMATION pi;
     WCHAR cmd[MAX_PATH + 16];

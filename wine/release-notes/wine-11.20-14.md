@@ -1,4 +1,4 @@
-Wine 11.20 for Plaviox, fourteenth build: a crash on a macOS thread always ends the process.
+Wine 11.20 for Magic Kettle, fourteenth build: a crash on a macOS thread always ends the process.
 
 ## What's new
 

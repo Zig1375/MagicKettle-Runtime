@@ -1,4 +1,4 @@
-Wine 11.20 for Plaviox, thirteenth build: Steam comes up more reliably now.
+Wine 11.20 for Magic Kettle, thirteenth build: Steam comes up more reliably now.
 
 ## What's new
 

@@ -1,4 +1,4 @@
-Wine 11.20 for Plaviox, fifth build: osync no longer hangs when threads are suspended or killed.
+Wine 11.20 for Magic Kettle, fifth build: osync no longer hangs when threads are suspended or killed.
 
 ## What's new
 

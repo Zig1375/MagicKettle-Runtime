@@ -1,4 +1,4 @@
-Wine 11.20 for Plaviox, eighth build: Chromium-based games no longer flicker.
+Wine 11.20 for Magic Kettle, eighth build: Chromium-based games no longer flicker.
 
 ## What's new
 
@@ -7,7 +7,7 @@ Wine 11.20 for Plaviox, eighth build: Chromium-based games no longer flicker.
   anything drawn only once alternated with an older picture: after such a game's window was maximized on a screen
   of another shape (The Taming Massage Parlor on a MacBook's own screen), the bars around its picture flickered
   between white and the picture from before, until the game happened to redraw the whole window. Wine now keeps
-  the last frame in the buffer the game draws into next. This is the OpenGL path every game takes when Plaviox
+  the last frame in the buffer the game draws into next. This is the OpenGL path every game takes when Magic Kettle
   emulates its display mode.
 
 ## What to watch for

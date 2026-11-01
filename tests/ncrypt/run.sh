@@ -2,7 +2,7 @@
 # Named CNG keys (ncrypt) against a built Wine:
 #   tests/ncrypt/run.sh <wine dir> <wine source tree> <wine build tree>
 # Runs keyprobe the way the Epic Games Launcher uses its key: one run creates a named key and signs with it; Wine is
-# stopped (wineserver -k, as Plaviox closes a store); a second run opens the key by name and checks it is the same.
+# stopped (wineserver -k, as Magic Kettle closes a store); a second run opens the key by name and checks it is the same.
 # Then Wine's own ncrypt conformance test, which has a test for named keys (test_named_key).
 set -euo pipefail
 WINE_DIR="$(cd "$1" && pwd)"; SRC="$(cd "$2" && pwd)"; BLD="$(cd "$3" && pwd)"
@@ -35,7 +35,7 @@ mkdir -p "$T/results"
 tr -d '\r' < "$T/out.txt" | grep -E '^(PASS|FAIL)' | sed 's/^/create: /' || echo "create: keyprobe crashed"
 grep -q '^FAIL' "$T/out.txt" && failed=1
 grep -q '^PASS results written' "$T/out.txt" || failed=1
-# Everything in the prefix stops, as when Plaviox closes a store; the key must be there for the next start.
+# Everything in the prefix stops, as when Magic Kettle closes a store; the key must be there for the next start.
 "$WINE_DIR/bin/wineserver" -k 2>/dev/null || true; "$WINE_DIR/bin/wineserver" -w 2>/dev/null || true
 (cd "$T" && timeout 120 "$WINE_DIR/bin/wine" keyprobe.exe check 'Z:'"$T/results" > "$T/out.txt" 2>&1) || true
 tr -d '\r' < "$T/out.txt" | grep -E '^(PASS|FAIL|KEY PROBE)' | sed 's/^/check: /' || echo "check: keyprobe crashed"

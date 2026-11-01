@@ -1,6 +1,6 @@
 name: Wine
 
-# Builds Plaviox's Wine (wine/build.sh) and attaches the archive to a release, for the runtime manifest.
+# Builds Magic Kettle's Wine (wine/build.sh) and attaches the archive to a release, for the runtime manifest.
 # Run by hand: Actions → Wine → Run workflow. A revision that already has a release is refused, because the
 # manifest pins each archive by SHA-256 and a rebuild never gives the same bytes. The release's description comes
 # from wine/release-notes/<tag>.md, committed with the change; a revision without one is refused before building.
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       revision:
-        description: Build number of this Wine version (plaviox-wine-<wine>-<revision>)
+        description: Build number of this Wine version (magickettle-wine-<wine>-<revision>)
         required: true
         default: "1"
 
@@ -54,15 +54,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cd wine/dist
-          archive="$(ls plaviox-wine-*.tar.xz)"
+          archive="$(ls magickettle-wine-*.tar.xz)"
           sha="$(shasum -a 256 "$archive" | cut -d' ' -f1)"; size="$(stat -f%z "$archive")"
-          ../release-notes.sh "$TAG" "$archive" plaviox-wine-*.component.json "$GITHUB_SHA" > "$RUNNER_TEMP/notes.md"
-          gh release create "$TAG" "$archive" plaviox-wine-*.component.json --target "$GITHUB_SHA" \
-            --title "Wine for Plaviox: $TAG" --notes-file "$RUNNER_TEMP/notes.md"
+          ../release-notes.sh "$TAG" "$archive" magickettle-wine-*.component.json "$GITHUB_SHA" > "$RUNNER_TEMP/notes.md"
+          gh release create "$TAG" "$archive" magickettle-wine-*.component.json --target "$GITHUB_SHA" \
+            --title "Wine for Magic Kettle: $TAG" --notes-file "$RUNNER_TEMP/notes.md"
           echo "archive: $archive"; echo "sha256:  $sha"; echo "size:    $size"
           {
             echo "### $archive"
             echo "- sha256: \`$sha\`"
             echo "- size: $size bytes"
-            echo '```json'; cat plaviox-wine-*.component.json; echo '```'
+            echo '```json'; cat magickettle-wine-*.component.json; echo '```'
           } >> "$GITHUB_STEP_SUMMARY"

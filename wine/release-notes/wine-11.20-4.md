@@ -1,4 +1,4 @@
-Wine 11.20 for Plaviox, fourth build: osync without its known limits.
+Wine 11.20 for Magic Kettle, fourth build: osync without its known limits.
 
 ## What's new
 
